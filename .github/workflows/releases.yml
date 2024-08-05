@@ -26,11 +26,13 @@ jobs:
       - name: Create ZIP file
         run: |
           mkdir release
-          zip -r release/cloudflare-dynamic-dns@${{ env.VERSION }}.zip src/*
+          cd src
+          zip -r ../release/cloudflare-dynamic-dns.zip .
+          cd ..
 
       - name: Create GitHub Release and Upload Asset
         id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create ${{ env.VERSION }} ./release/cloudflare-dynamic-dns@${{ env.VERSION }}.zip --title "Release ${{ env.VERSION }}" --notes "Automated release for version ${{ env.VERSION }}" --repo ${{ github.repository }}
+          gh release create ${{ env.VERSION }} ./release/cloudflare-dynamic-dns.zip --title "Release ${{ env.VERSION }}" --notes "Automated release for version ${{ env.VERSION }}" --repo ${{ github.repository }}

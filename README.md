@@ -4,6 +4,18 @@ This is a small script to change you IP dynamically in Cloudflare in case your i
 
 It supports IPv4 and IPv6
 
+## How to use
+
+### Run commands
+
+```bash
+ mkdir "cloudflare-dynamic-dns"
+ cd "cloudflare-dynamic-dns"
+ wget https://github.com/dev-steinbrecher/cloudflare-dynamic-dns/releases/latest/download/cloudflare-dynamic-dns.zip
+ unzip cloudflare-dynamic-dns.zip
+ rm cloudflare-dynamic-dns.zip
+```
+
 ### Create an API token for the Cloudflare API
 
 [Create Token](https://dash.cloudflare.com/profile/api-tokens)
