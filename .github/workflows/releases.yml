@@ -1,0 +1,52 @@
+name: Create Release ZIP
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install GitHub CLI
+        run: sudo apt-get install -y gh
+
+      - name: Extract version from tag
+        id: extract_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Create ZIP file
+        run: |
+          mkdir release
+          zip -r release/cloudflare-dynamic-dns@${{ env.VERSION }}.zip src
+
+      - name: Create GitHub Release
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh auth login --with-token <<< $GITHUB_TOKEN
+          gh release create ${{ env.VERSION }} ./release/cloudflare-dynamic-dns@${{ env.VERSION }}.zip --title "Release ${{ env.VERSION }}" --notes "Automated release for version ${{ env.VERSION }}"
+
+      - name: Get Release Upload URL
+        id: get_upload_url
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RELEASE_UPLOAD_URL=$(gh api repos/${{ github.repository }}/releases/tags/${{ env.VERSION }} --jq .upload_url)
+          echo "UPLOAD_URL=${RELEASE_UPLOAD_URL%{*}}" >> $GITHUB_ENV
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ env.UPLOAD_URL }}
+          asset_path: ./release/cloudflare-dynamic-dns@${{ env.VERSION }}.zip
+          asset_name: cloudflare-dynamic-dns@${{ env.VERSION }}.zip
+          asset_content_type: application/zip

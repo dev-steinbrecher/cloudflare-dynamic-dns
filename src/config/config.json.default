@@ -1,0 +1,5 @@
+{
+  "token": "<token>",
+  "zoneId": "<zoneId>",
+  "updateIPv6": "<true/false>"
+}
